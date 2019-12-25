@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 BASE_URL = 'http://developer.limneos.net/index.php'
 
 def generate_headers(version: str):
-    if not os.path.exists:
+    if not os.path.exists(version):
         os.mkdir(version)
 
     ios_param = '?ios='
