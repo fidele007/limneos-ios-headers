@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 BASE_URL = 'http://developer.limneos.net/index.php'
+HEADER_URL = 'http://developer.limneos.net/headers'
 
 def generate_headers(version: str):
     if not os.path.exists(version):
@@ -31,15 +32,22 @@ def generate_headers(version: str):
             os.mkdir(framework_dir)
 
         framework_url = BASE_URL + framework_link['href']
+        framework_name = framework_link.text.strip()
+        if framework_name != 'SpringBoard':
+            framework_name += '.framework'
+
         response = requests.get(framework_url)
         soup = BeautifulSoup(response.content, 'html.parser')
         header_links = soup.find(id='container').find_all('a')
         for header_link in header_links:
-            response = requests.get(BASE_URL + header_link['href'])
-            soup = BeautifulSoup(response.content, 'html.parser')
+            header_file_name = header_link.text.strip()
+            header_file_url = f'{HEADER_URL}/{version}/{framework_name}/Headers/{header_file_name}'
+            # response = requests.get(BASE_URL + header_link['href'])
+            # soup = BeautifulSoup(response.content, 'html.parser')
+            response = requests.get(header_file_url);
             with open(os.path.join(framework_dir, header_link.text.strip()), 'w') as fp:
-                fp.write(soup.find('pre').text)
-
+                # fp.write(soup.find('pre').text)
+                fp.write(response.text)
 
 def animated_loading():
     chars = r'/—\|'
